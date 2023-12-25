@@ -1,0 +1,9 @@
+clean.sql
+tmp
+tmp.sql
+demo.tmp.sql
+reset_all.sql
+/backup/
+/backup2/
+MX.demo.tmp.sql
+CREATE_DATABASE_LINK_adv.sql
