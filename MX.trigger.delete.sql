@@ -1,88 +1,73 @@
-
-
 --cập nhật tổng đơn hàng sau khi xóa sản phẩm ra khỏi chi tiết đơn hàng
-CREATE
-OR REPLACE TRIGGER orders_details_after_delete
-AFTER
-DELETE
-    ON orders_details FOR EACH ROW
-    DECLARE curr_stock_id number;
-
-BEGIN
-
-select stock_id into curr_stock_id 
-   from orders 
-   where order_id=:old.order_id;
-
--- cập nhật tổng tiền của đơn hàng
-UPDATE
-    orders
-SET
-    total = total - :old.quatity * :old.price
-WHERE
-    orders.order_id = :old.order_id;
-
-
---cập nhật số lượng cd có trong kho
-UPDATE
-    stock_detail
-SET
-    stock_detail.STOCK_AVAILABLE = stock_detail.STOCK_AVAILABLE + :old.quatity
-WHERE
-    stock_detail.cd_id = :old.cd_id and stock_detail.stock_id=curr_stock_id;
-
---cập nhật số lượng hàng có bên trong kho
-UPDATE
-    c##admin.stock@DB_admin
-SET
-    STOCK_AVAILABLE = STOCK_AVAILABLE + :old.quatity
-    where stock_id=curr_stock_id;
-END;
-
---xóa tất cả các chi tiết order trước khi xóa order
-CREATE
-OR REPLACE TRIGGER orders_before_delete
-before
-DELETE
-    ON orders_details FOR EACH ROW
-    DECLARE curr_stock_id number;
-
-BEGIN
-    delete from orders_details where order_id=:old.order_id;
-end;
-
---cập nhật số lượng cd có trong kho sau khi xóa khỏi chi tiết import cd
-
-create or replace trigger import_cd_detail_after_delete
-after delete on import_cd_detail 
-for each ROW
+CREATE OR REPLACE TRIGGER ORDERS_DETAILS_AFTER_DELETE AFTER
+    DELETE ON ORDERS_DETAILS FOR EACH ROW
 DECLARE
-    cd_exist_stock int;
-    curr_stock_id int;
-    curr_stock_available int;
-    curr_stock_capacity int;
-begin 
-   select stock_id into curr_stock_id from import_cd where import_cd_id=:old.import_cd_id;
-   update stock_detail
-   set stock_available=stock_available-:old.quatity
-   where stock_id=curr_stock_id and cd_id=:old.cd_id;
-   
-   update C##admin.stock@db_admin 
-   set stock_available=stock_available-:old.quatity
-   where stock_id=curr_stock_id;
-end;
-
-
---xóa tất cả các chi tiết import sau khi xóa trước khi xóa import cd
-CREATE
-OR REPLACE TRIGGER import_cd_before_delete
-before
-DELETE
-    ON import_cd FOR EACH ROW
-    DECLARE curr_stock_id number;
-
+    CURR_STOCK_ID NUMBER;
 BEGIN
-    delete from import_cd_detail where import_cd_id=:old.import_cd_id;
-end;
-
-
+    SELECT
+        STOCK_ID INTO CURR_STOCK_ID
+    FROM
+        ORDERS
+    WHERE
+        ORDER_ID=:OLD.ORDER_ID;
+ -- cập nhật tổng tiền của đơn hàng
+    UPDATE ORDERS
+    SET
+        TOTAL = TOTAL - :OLD.QUATITY * :OLD.PRICE
+    WHERE
+        ORDERS.ORDER_ID = :OLD.ORDER_ID;
+ --cập nhật số lượng pen có trong kho
+    UPDATE STOCK_DETAIL
+    SET
+        STOCK_DETAIL.STOCK_AVAILABLE = STOCK_DETAIL.STOCK_AVAILABLE + :OLD.QUATITY
+    WHERE
+        STOCK_DETAIL.PEN_ID = :OLD.PEN_ID
+        AND STOCK_DETAIL.STOCK_ID=CURR_STOCK_ID;
+ --cập nhật số lượng hàng có bên trong kho
+    UPDATE C##ADMIN.STOCK@DB_ADMIN
+    SET
+        STOCK_AVAILABLE = STOCK_AVAILABLE + :OLD.QUATITY
+    WHERE
+        STOCK_ID=CURR_STOCK_ID;
+END;
+ --xóa tất cả các chi tiết order trước khi xóa order
+CREATE OR REPLACE TRIGGER ORDERS_BEFORE_DELETE BEFORE
+DELETE ON ORDERS_DETAILS FOR EACH ROW DECLARE CURR_STOCK_ID NUMBER;
+BEGIN
+    DELETE FROM ORDERS_DETAILS
+    WHERE
+        ORDER_ID=:OLD.ORDER_ID;
+END;
+ --cập nhật số lượng pen có trong kho sau khi xóa khỏi chi tiết import pen
+CREATE OR REPLACE TRIGGER IMPORT_PEN_DETAIL_AFTER_DELETE AFTER
+DELETE ON IMPORT_PEN_DETAIL FOR EACH ROW DECLARE PEN_EXIST_STOCK INT;
+CURR_STOCK_ID INT;
+CURR_STOCK_AVAILABLE INT;
+CURR_STOCK_CAPACITY INT;
+BEGIN
+    SELECT
+        STOCK_ID INTO CURR_STOCK_ID
+    FROM
+        IMPORT_PEN
+    WHERE
+        IMPORT_PEN_ID=:OLD.IMPORT_PEN_ID;
+    UPDATE STOCK_DETAIL
+    SET
+        STOCK_AVAILABLE=STOCK_AVAILABLE-:OLD.QUATITY
+    WHERE
+        STOCK_ID=CURR_STOCK_ID
+        AND PEN_ID=:OLD.PEN_ID;
+    UPDATE C##ADMIN.STOCK@DB_ADMIN
+    SET
+        STOCK_AVAILABLE=STOCK_AVAILABLE-:OLD.QUATITY
+    WHERE
+        STOCK_ID=CURR_STOCK_ID;
+END;
+ --xóa tất cả các chi tiết import sau khi xóa trước khi xóa import pen
+CREATE OR REPLACE TRIGGER IMPORT_PEN_BEFORE_DELETE BEFORE
+DELETE ON IMPORT_PEN FOR EACH ROW DECLARE CURR_STOCK_ID NUMBER;
+BEGIN
+    DELETE FROM IMPORT_PEN_DETAIL
+    WHERE
+        IMPORT_PEN_ID=:OLD.IMPORT_PEN_ID;
+END;

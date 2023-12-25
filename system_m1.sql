@@ -1,29 +1,41 @@
-
 connect system/123456;
-drop  user  c##M1 CASCADE;
-drop ROLE c##role_user_guest1;
-drop user C##GUEST1 CASCADE;
 
-create user  c##M1 identified by a123;
-grant Connect, Resource, CREATE DATABASE LINK,CREATE ROLE, UNLIMITED  TABLESPACE to C##M1;
+DROP USER C##M1 CASCADE;
+
+DROP ROLE C##ROLE_USER_GUEST1;
+
+DROP USER C##GUEST1 CASCADE;
+
+CREATE USER C##M1 IDENTIFIED BY a123;
+
+GRANT CONNECT, RESOURCE, CREATE DATABASE LINK, CREATE ROLE, UNLIMITED TABLESPACE TO C##M1;
 
 connect c##m1/a123;
+
 --- enter script in file MX.sql
 
-connect system/123456;
+connect system/meo123;
 
-CREATE ROLE c##role_user_guest1 NOT IDENTIFIED;
+CREATE ROLE C##ROLE_USER_GUEST1 NOT IDENTIFIED;
 
-GRANT select,insert,update,delete  on c##M1.stock to c##role_user_guest1;
-GRANT select,insert,update,delete  on c##M1.cd to c##role_user_guest1;
-GRANT select,insert,update,delete  on c##M1.stock_detail to c##role_user_guest1;
-GRANT select,insert,update,delete  on c##M1.import_cd to c##role_user_guest1;
-GRANT select,insert,update,delete  on c##M1.import_cd_detail to c##role_user_guest1;
-GRANT select,insert,update,delete  on c##M1.customer to c##role_user_guest1;
-GRANT select,insert,update,delete  on c##M1.orders to c##role_user_guest1;
-GRANT select,insert,update,delete  on c##M1.orders_details to c##role_user_guest1;
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.STOCK TO C##ROLE_USER_GUEST1;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.PEN TO C##ROLE_USER_GUEST1;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.STOCK_DETAIL TO C##ROLE_USER_GUEST1;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.IMPORT_PEN TO C##ROLE_USER_GUEST1;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.IMPORT_PEN_DETAIL TO C##ROLE_USER_GUEST1;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.CUSTOMER TO C##ROLE_USER_GUEST1;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.ORDERS TO C##ROLE_USER_GUEST1;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON C##M1.ORDERS_DETAILS TO C##ROLE_USER_GUEST1;
 
 CREATE USER C##GUEST1 IDENTIFIED BY GUEST;
+
 GRANT CONNECT TO C##GUEST1;
 
-GRANT c##role_user_guest1  to C##GUEST1;
+GRANT C##ROLE_USER_GUEST1 TO C##GUEST1;
