@@ -17,12 +17,14 @@ CREATE TABLE CUSTOMER (
   PRIMARY KEY(CUST_ID)
 );
 
-----
+------------------------------------------------------------------------------------------------------------------------
 CREATE DATABASE LINK DB_M1 CONNECT TO C##M1 IDENTIFIED BY A123
 USING 'dung';
 
 CREATE DATABASE LINK DB_M2 CONNECT TO C##M2 IDENTIFIED BY A123
 USING 'hoa';
+
+------------------------------------------------------------------------------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE CREATE_BRAND_STORE(
   BRAND_STORE_ID NUMBER,
@@ -34,7 +36,7 @@ CREATE OR REPLACE PROCEDURE CREATE_BRAND_STORE(
 ) AS
 BEGIN
   IF(BRAND_STORE_DISTRICT = 'Ho Chi Minh') THEN
-    INSERT INTO C ##M1.BRAND_STORE@DB_M1 VALUES (
+    INSERT INTO C##M1.BRAND_STORE@DB_M1 VALUES (
       NULL,
       BRAND_STORE_NAME,
       BRAND_STORE_DISTRICT,
@@ -44,7 +46,7 @@ BEGIN
     );
   ELSE
     IF(BRAND_STORE_DISTRICT = 'Ha Noi') THEN
-      INSERT INTO C ##M2.BRAND_STORE@DB_M2 VALUES (
+      INSERT INTO C##M2.BRAND_STORE@DB_M2 VALUES (
         NULL,
         BRAND_STORE_NAME,
         BRAND_STORE_DISTRICT,
@@ -54,7 +56,7 @@ BEGIN
       );
     ELSE
       IF(BRAND_STORE_DISTRICT = 'Da Nang') THEN
-        INSERT INTO C ##M3.BRAND_STORE@DB_M3 VALUES (
+        INSERT INTO C##M3.BRAND_STORE@DB_M3 VALUES (
           NULL,
           BRAND_STORE_NAME,
           BRAND_STORE_DISTRICT,
@@ -69,7 +71,7 @@ BEGIN
     END IF;
   END IF;
 END;
-
+ ------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE UPDATE_IMPORT_PEN( IMPORT_PEN_ID NUMBER, PEN_ID NUMBER, QUATITY NUMBER ) AS
 BEGIN
   IF( IMPORT_PEN_ID > 0
@@ -89,7 +91,7 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('import pen id in range [1..30000]');
   END IF;
 END;
-
+ ------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE UPDATE_ORDERS_DETAILS( ORDER_ID NUMBER, STOCK_ID NUMBER, PEN_ID NUMBER, QUATITY NUMBER, ) AS
 BEGIN
   IF( ORDER_ID > 0
@@ -118,7 +120,7 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('import pen id in range [1..300000]');
       END IF;
     END;
-    UPDATE C ##M1.PEN@DB_M1
+    UPDATE C##M1.PEN@DB_M1
     SET
       PEN_PRICE = 1000
     WHERE
@@ -126,4 +128,4 @@ BEGIN
     SELECT
       *
     FROM
-      C ##M1.PEN@DB_M1
+      C##M1.PEN@DB_M1
