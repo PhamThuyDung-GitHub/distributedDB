@@ -1,4 +1,4 @@
-connect system/123456;
+connect system/meo123;
 
 DROP USER C##M1 CASCADE;
 
