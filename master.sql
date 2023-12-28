@@ -92,40 +92,39 @@ BEGIN
   END IF;
 END;
  ------------------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE PROCEDURE UPDATE_ORDERS_DETAILS( ORDER_ID NUMBER, STOCK_ID NUMBER, PEN_ID NUMBER, QUATITY NUMBER, ) AS
+CREATE OR REPLACE PROCEDURE UPDATE_ORDERS_DETAILS( P_ORDER_ID NUMBER, P_STOCK_ID NUMBER, P_PEN_ID NUMBER, P_QUANTITY NUMBER ) AS
 BEGIN
-  IF( ORDER_ID > 0
-  AND ORDER_ID < 100000 ) THEN
-    UPDATE M1.ORDERS_DETAILS @DB_M1
+  IF (P_ORDER_ID > 0
+  AND P_ORDER_ID < 100000) THEN
+    UPDATE M1.ORDERS_DETAILS@DB_M1
     SET
-      QUATITY = QUATITY
+      QUANTITY = P_QUANTITY
     WHERE
-      ORDER_ID = ORDER_ID
-      AND PEN_ID = PEN_ID;
-    ELSEIF(ORDER_ID < 100001) THEN
-      UPDATE M2.ORDERS_DETAILS @DB_M2
-      SET
-        QUATITY = QUATITY
-      WHERE
-        ORDER_ID = ORDER_ID
-        AND PEN_ID = PEN_ID;
-      ELSEIF(ORDER_ID < 200001) THEN
-        UPDATE M3.ORDERS_DETAILS @DB_M3
-        SET
-          QUATITY = QUATITY
-        WHERE
-          ORDER_ID = ORDER_ID
-          AND PEN_ID = PEN_ID;
-      ELSE
-        DBMS_OUTPUT.PUT_LINE('import pen id in range [1..300000]');
-      END IF;
-    END;
-    UPDATE C##M1.PEN@DB_M1
+      ORDER_ID = P_ORDER_ID
+      AND PEN_ID = P_PEN_ID;
+  ELSIF (P_ORDER_ID < 100001) THEN
+    UPDATE M2.ORDERS_DETAILS@DB_M2
     SET
-      PEN_PRICE = 1000
+      QUANTITY = P_QUANTITY
     WHERE
-      PEN_ID = 1;
-    SELECT
-      *
-    FROM
-      C##M1.PEN@DB_M1
+      ORDER_ID = P_ORDER_ID
+      AND PEN_ID = P_PEN_ID;
+  ELSIF (P_ORDER_ID < 200001) THEN
+    UPDATE M3.ORDERS_DETAILS@DB_M3
+    SET
+      QUANTITY = P_QUANTITY
+    WHERE
+      ORDER_ID = P_ORDER_ID
+      AND PEN_ID = P_PEN_ID;
+  ELSE
+    RAISE_APPLICATION_ERROR(-20001, 'Invalid order ID. Please import pen ID in the range [1..300000].');
+  END IF;
+ -- Update PEN price for PEN_ID 1 in schema C##M1
+  UPDATE C##M1.PEN@DB_M1
+  SET
+    PEN_PRICE = 1000
+  WHERE
+    PEN_ID = 1;
+ -- SELECT statement (explain its purpose)
+ -- SELECT * FROM C##M1.PEN@DB_M1;
+END;
